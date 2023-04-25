@@ -1,0 +1,16 @@
+version: '3.8'
+#***************************************local**********************************
+services:
+  wemakesoftware-minio:
+    image: minio/minio:latest
+    hostname: wemakesoftware-minio
+    container_name: wemakesoftware-minio
+    command: server /data --console-address ":9001"
+#    volumes:
+#      - ./minio/data:/data
+    environment:
+      MINIO_ROOT_USER: username
+      MINIO_ROOT_PASSWORD: password
+    ports:
+      - 9000:9000
+      - 9001:9001
