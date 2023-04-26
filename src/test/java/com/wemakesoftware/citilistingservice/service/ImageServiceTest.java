@@ -24,7 +24,7 @@ class ImageServiceTest {
 
     private ImageService imageService;
     private MinioClient minioClient;
-    String bucketName = "city";
+    private String bucketName = "city";
 
     @BeforeEach
     public void setup(){
@@ -34,17 +34,11 @@ class ImageServiceTest {
     }
 
     @Test
-    void uploadFile() throws IOException {
+    void uploadFile() {
         final Resource imageResource = new ClassPathResource("Map.png");
         String flname = "city";
-        imageService.uploadFile(flname, imageResource, bucketName);
-    }
-
-    @Test
-    void uploadImage() throws IOException {
-        MultipartFile img = new MockMultipartFile("fileName", new byte[0]);
-        String obectName = "objectName";
-        imageService.uploadImage(img,obectName);
+        String result = imageService.uploadFile(flname, imageResource, bucketName);
+        assertNotNull(result);
     }
 
     @Test
@@ -57,7 +51,8 @@ class ImageServiceTest {
     void replace() throws MinioException, IOException {
         MultipartFile city = new MockMultipartFile("fileName", new byte[0]);
         String obectName = "objectName";
-        imageService.replace(city,obectName);
+        String result = imageService.replace(city,obectName);
+        assertNotNull(result);
     }
 
     @Test
@@ -65,6 +60,7 @@ class ImageServiceTest {
         String obectName = "objectName";
         final Resource imageResource = new ClassPathResource("Map.png");
         when(minioClient.getObject(any())).thenReturn(imageResource.getInputStream());
-        imageService.download(obectName);
+        byte[] result = imageService.download(obectName);
+        assertTrue(result.length>0);
     }
 }

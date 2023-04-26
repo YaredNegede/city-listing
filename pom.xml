@@ -86,6 +86,12 @@
 			<version>${minio.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+			<version>9.8.1</version>
+		</dependency>
+
 		<!--SWAGGER-->
 
 		<dependency>
@@ -194,10 +200,11 @@
 				<artifactId>flyway-maven-plugin</artifactId>
 				<version>8.5.13</version>
 				<configuration>
-					<user>databaseUser</user>
-					<password>databasePassword</password>
+					<user>pgadmin4@pgadmin.org</user>
+					<password>password</password>
+					<baselineOnMigrate>true</baselineOnMigrate>
 					<schemas>
-						<schema>schemaName</schema>
+						<schema>cities</schema>
 					</schemas>
 				</configuration>
 
