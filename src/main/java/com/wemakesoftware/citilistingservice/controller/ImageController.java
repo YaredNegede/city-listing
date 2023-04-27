@@ -1,16 +1,13 @@
 package com.wemakesoftware.citilistingservice.controller;
 
-
 import com.wemakesoftware.citilistingservice.dto.DownloadFileResponseDto;
 import com.wemakesoftware.citilistingservice.service.ImageService;
 import io.minio.errors.MinioException;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
-import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,28 +21,26 @@ public class ImageController {
 
     private ImageService imageService;
 
-    @PatchMapping(produces = "application/json",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity update(@RequestPart("image") MultipartFile image,
-                                 @RequestParam("objectName") String objectName) throws MinioException, IOException {
+    @PutMapping(value = "update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> update(@RequestPart("image") MultipartFile image,
+                                 @RequestParam("objectName") String objectName) throws Exception {
         return ResponseEntity.ok(imageService.replace(image, objectName));
     }
 
-    @PostMapping(produces = "application/json",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> create(@RequestPart("image") MultipartFile image,
-                                       @RequestParam("objectName") String objectName) throws IOException {
+                                       @RequestParam("objectName") String objectName) throws Exception {
         return ResponseEntity.ok(imageService.uploadImage(image, objectName));
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> remove(@RequestParam("objectName") String objectName) throws MinioException {
+    @DeleteMapping(value = "remove")
+    public ResponseEntity<Void> remove(@RequestParam("objectName") String objectName) throws Exception {
         imageService.remove(objectName);
         return ResponseEntity.accepted().build();
     }
 
-    @GetMapping(produces = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Resource> download(@RequestParam("objectName") String objectName) throws MinioException {
+    @GetMapping(value = "download", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Resource> download(@RequestParam("objectName") String objectName) throws Exception {
 
         DownloadFileResponseDto downloadImage =   DownloadFileResponseDto.builder()
                                             .fileName(objectName)

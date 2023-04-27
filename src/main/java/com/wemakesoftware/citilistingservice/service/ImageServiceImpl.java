@@ -61,9 +61,7 @@ public class ImageServiceImpl implements ImageService {
             RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder().bucket(bucketName)
                     .object(objectName).build();
             minioClient.removeObject(removeObjectArgs);
-        } catch (InvalidKeyException | ErrorResponseException | IllegalArgumentException | InsufficientDataException
-                 | InternalException | InvalidBucketNameException | InvalidResponseException | NoSuchAlgorithmException
-                 | ServerException | XmlParserException | IOException e) {
+        } catch (Exception e) {
             log.error("Error info bucketName: {}, objectName: {}", bucketName, objectName);
             throw new MinioException(e.getMessage());
         }

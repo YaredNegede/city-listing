@@ -16,10 +16,11 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MinioContainerTest {
+public class MinioContainerTestIT {
 
     private static final String ACCESS_KEY = "accessKey";
     private static final String SECRET_KEY = "secretKey";
+
     private static final String BUCKET = "bucket";
 
     private AmazonS3 client = null;

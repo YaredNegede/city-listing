@@ -16,7 +16,7 @@ public class FlywayMigration extends BaseJavaMigration {
     @Override
     public void migrate(Context context) throws Exception {
         log.debug("migration started");
-        final Resource cityResource = new ClassPathResource("cities.csv");
+        final Resource cityResource = new ClassPathResource("src/test/resources/data/world-cities.csv");
         FileReader fileReader = new FileReader(cityResource.getFile());
         BufferedReader inStream = new BufferedReader(fileReader);
         String inString;
