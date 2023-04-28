@@ -7,13 +7,13 @@ import java.io.IOException;
 
 public interface ImageService {
 
-    String uploadFile(String bucketName, Resource resource, String fileName);
+    String uploadFile(String bucketName, Resource resource, String fileName) throws Exception;
 
-    String uploadImage(MultipartFile image, String objectName) throws IOException;
+    String uploadImage(MultipartFile image, String objectName) throws Exception;
 
     void removeObjectFromBucket(String bucketName, String objectName) throws MinioException;
 
-    String replace(MultipartFile image, String objectName) throws IOException, MinioException;
+    String replace(MultipartFile image, String objectName) throws Exception;
 
     void remove(String objectName) throws MinioException;
 

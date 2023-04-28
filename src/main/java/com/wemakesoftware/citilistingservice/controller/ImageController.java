@@ -15,31 +15,31 @@ import java.io.IOException;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/v1/api/city/image/")
+@RequestMapping(Paths.root_image)
 @Slf4j
 public class ImageController {
 
     private ImageService imageService;
 
-    @PutMapping(value = "update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> update(@RequestPart("image") MultipartFile image,
-                                 @RequestParam("objectName") String objectName) throws Exception {
-        return ResponseEntity.ok(imageService.replace(image, objectName));
-    }
-
-    @PostMapping(value = "create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = Paths.root_image_create, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> create(@RequestPart("image") MultipartFile image,
                                        @RequestParam("objectName") String objectName) throws Exception {
         return ResponseEntity.ok(imageService.uploadImage(image, objectName));
     }
 
-    @DeleteMapping(value = "remove")
+    @PostMapping(value = Paths.root_image_update, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> update(@RequestPart("image") MultipartFile image,
+                                         @RequestParam("objectName") String objectName) throws Exception {
+        return ResponseEntity.ok(imageService.replace(image, objectName));
+    }
+
+    @DeleteMapping(value = Paths.root_image_delete)
     public ResponseEntity<Void> remove(@RequestParam("objectName") String objectName) throws Exception {
         imageService.remove(objectName);
         return ResponseEntity.accepted().build();
     }
 
-    @GetMapping(value = "download", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @GetMapping(value = Paths.root_image_download, produces = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Resource> download(@RequestParam("objectName") String objectName) throws Exception {
 
         DownloadFileResponseDto downloadImage =   DownloadFileResponseDto.builder()
@@ -54,4 +54,3 @@ public class ImageController {
     }
 
 }
-

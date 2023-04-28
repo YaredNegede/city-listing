@@ -1,11 +1,13 @@
 package com.wemakesoftware.citilistingservice.service;
 
+import com.wemakesoftware.citilistingservice.controller.Paths;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
 import io.minio.errors.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -35,13 +37,25 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public String uploadFile(String bucketName, Resource resource, String fileName) {
+    public String uploadFile(String bucketName, Resource resource, String fileName) throws Exception {
+
+        if(resource == null){
+            throw new Exception("Bucket is not set");
+        }
+
+        if(StringUtils.isBlank(bucketName)){
+            throw new Exception("Bucket is not set");
+        }
+
+        if(StringUtils.isBlank(fileName)){
+            throw new Exception("File name cannot be null");
+        }
 
         try (InputStream fis = resource.getInputStream()) {
             minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(fileName)
                     .stream(fis, fis.available(), -1).build());
 
-            return String.join(File.separator, fileName);
+            return Paths.root_image+Paths.root_image_download+"?objectName="+fileName;
 
         } catch (Exception e) {
             log.error("Error when call minio upload file {}", e);
@@ -50,7 +64,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public String uploadImage(MultipartFile image, String objectName) throws IOException {
+    public String uploadImage(MultipartFile image, String objectName) throws Exception {
         return uploadFile(this.cityImageBucketName, new ByteArrayResource(image.getBytes()), objectName);
     }
 
@@ -68,7 +82,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public String replace(MultipartFile image, String objectName) throws IOException, MinioException {
+    public String replace(MultipartFile image, String objectName) throws Exception {
         removeObjectFromBucket(cityImageBucketName, objectName);
         return uploadImage(image, objectName);
     }

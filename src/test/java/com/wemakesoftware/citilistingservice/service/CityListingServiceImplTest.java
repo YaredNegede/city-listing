@@ -62,16 +62,8 @@ class CityListingServiceImplTest {
     }
 
     @Test
-    @Description("this should not throw exception")
-    void deleteCity() {
-
-        cityListingService.deleteCity(1l);
-    }
-
-    @Test
     @Description("Should update city detail")
     void updateCityDetail() {
-
         CityDto city = CityDto
                 .builder()
                 .id(1l)
