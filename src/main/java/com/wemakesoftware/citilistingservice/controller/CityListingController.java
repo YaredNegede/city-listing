@@ -9,11 +9,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/v1/api/cities")
+@RequestMapping(Paths.root_city)
 @AllArgsConstructor
 @Slf4j
 public class CityListingController {
@@ -41,10 +42,24 @@ public class CityListingController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/{id}/photo")
+    @PutMapping(value = "/{id}/photo", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateCity(@PathVariable long id, @RequestBody PhotoDto photoDto) {
         cityService.updateCityDetail(id,photoDto);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{name}/photo", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page<PhotoDto>> getPhotos(@PathVariable String name,
+                                          @RequestParam(required=true,defaultValue="0")  Integer currentPage,
+                                          @RequestParam(required=true,defaultValue="10") Integer size) throws Exception {
+        return  ResponseEntity.ok(cityService.getPhotos(name,PageRequest.of(currentPage,size)));
+    }
+
+    @GetMapping(value = "/{id}/photo", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page<PhotoDto>> getPhotos(@PathVariable int id,
+                                          @RequestParam(required=true,defaultValue="0")  Integer currentPage,
+                                          @RequestParam(required=true,defaultValue="10") Integer size) throws Exception {
+        return  ResponseEntity.ok(cityService.getPhotos(id,PageRequest.of(currentPage,size)));
     }
 
 }

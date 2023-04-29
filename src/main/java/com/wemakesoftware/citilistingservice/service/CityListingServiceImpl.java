@@ -84,6 +84,21 @@ public class CityListingServiceImpl implements CityListingService {
                         cityRepository.save(city);
                     });
         }
+    }
 
+    @Override
+    public Page<PhotoDto> getPhotos(String name, Pageable pageable) throws Exception {
+        Page<Photo> photos = photoListingRepository.findAllByPhotoNameLike(name, pageable);
+        return new PageImpl<>(photos.getContent().stream().map(cityMapper::fromPhoto).collect(Collectors.toList()));
+    }
+
+    @Override
+    public Page<PhotoDto> getPhotos(long id, Pageable pageable) throws Exception {
+        Optional<City> city = cityRepository.findById(id);
+        if(city.isEmpty()){
+            throw new Exception("city not found");
+        }
+        Page<Photo> photos = photoListingRepository.findAllByCity(city.get(),pageable);
+        return new PageImpl<>(photos.getContent().stream().map(cityMapper::fromPhoto).collect(Collectors.toList()));
     }
 }

@@ -1,28 +1,50 @@
 package com.wemakesoftware.citilistingservice.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.Bucket;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.api.model.HostConfig;
+import com.github.dockerjava.api.model.PortBinding;
+import com.github.dockerjava.api.model.Ports;
 import com.wemakesoftware.citilistingservice.CityListingServiceApplication;
+import com.wemakesoftware.citilistingservice.controller.util.MinioContainer;
+import com.wemakesoftware.citilistingservice.controller.util.MinioSetup;
+import com.wemakesoftware.citilistingservice.controller.util.Page;
+import com.wemakesoftware.citilistingservice.dto.PhotoDto;
 import com.wemakesoftware.citilistingservice.model.City;
 import com.wemakesoftware.citilistingservice.repository.CityListingRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.flywaydb.core.api.migration.Context;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.io.*;
-import java.sql.Statement;
+import java.util.UUID;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
 @AutoConfigureMockMvc
 @SpringBootTest(classes = CityListingServiceApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = "classpath:application-test.properties")
-class CityListingControllerTestIT {
+class CityListingControllerTestIT extends MinioSetup {
+
+    @Autowired
+    private MockMvc mockMvc;
 
     @Autowired
     private CityListingRepository cityListingRepository;
@@ -52,17 +74,63 @@ class CityListingControllerTestIT {
     }
 
     @Test
-    void getAllCities() {
+    @DisplayName("Should read all cities , and update for photos")
+    void getAllCities() throws Exception {
 
-    }
+        ObjectMapper objectMapper = new ObjectMapper();
 
-    @Test
-    void deleteCity() {
+        int currentPage = 0;
+        int size = 10;
 
-    }
+        for (int i = 0; i < 5; i++) {
 
-    @Test
-    void updateCityDetail() {
+            ResultActions result = mockMvc.perform(get(Paths.root_city+"?currentPage="+currentPage+"&size="+size))
+                    .andDo(MockMvcResultHandlers.print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.content").isArray())
+                    .andExpect(jsonPath("$.content.length()", Matchers.is(10)))
+                    .andExpect(jsonPath("$.numberOfElements", Matchers.is(10)))
+                    .andExpect(jsonPath("$.totalPages", Matchers.is(1)))
+                    .andExpect(jsonPath("$.size", Matchers.is(10)));
+
+            String content = result.andReturn()
+                    .getResponse()
+                    .getContentAsString();
+
+            Page pagesCityDtos = objectMapper.readValue(content,Page.class);
+
+            pagesCityDtos.content.forEach(cityDto -> {
+                String fileName = UUID.randomUUID()+".jpeg";
+                try {
+
+                    String url = createOne(fileName, "1.jpeg", this.mockMvc)
+                            .andExpect(status().isOk())
+                            .andReturn()
+                            .getResponse()
+                            .getContentAsString();
+
+                    PhotoDto photoDto = PhotoDto.builder()
+                            .photoUrl(url)
+                            .photoName(fileName)
+                            .build();
+
+                    mockMvc.perform(
+                            put(Paths.root_city+cityDto.getId()+"/photo")
+                                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                    .content(objectMapper.writeValueAsBytes(photoDto))
+                    )
+                            .andExpect(status().isOk())
+                            .andReturn()
+                            .getResponse()
+                            .getContentAsString()
+                            .contains(Paths.root_image+Paths.root_image_download+"?objectName="+fileName);
+
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+        }
 
     }
 

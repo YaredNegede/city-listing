@@ -14,4 +14,8 @@ public interface CityListingService {
     void updateCityDetail(long id, PhotoDto newCity);
 
     void updateCityDetail(long id, CityDto cityDto);
+
+    Page<PhotoDto> getPhotos(String named, Pageable pageable) throws Exception;
+
+    Page<PhotoDto> getPhotos(long id, Pageable pageable) throws Exception;
 }

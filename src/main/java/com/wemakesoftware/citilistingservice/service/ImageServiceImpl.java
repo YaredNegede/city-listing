@@ -40,7 +40,7 @@ public class ImageServiceImpl implements ImageService {
     public String uploadFile(String bucketName, Resource resource, String fileName) throws Exception {
 
         if(resource == null){
-            throw new Exception("Bucket is not set");
+            throw new Exception("Resource is not set");
         }
 
         if(StringUtils.isBlank(bucketName)){
@@ -83,6 +83,13 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public String replace(MultipartFile image, String objectName) throws Exception {
+        if(image == null){
+            throw new Exception("Bucket is not set");
+        }
+
+        if(StringUtils.isBlank(objectName)){
+            throw new Exception("File name cannot be null");
+        }
         removeObjectFromBucket(cityImageBucketName, objectName);
         return uploadImage(image, objectName);
     }

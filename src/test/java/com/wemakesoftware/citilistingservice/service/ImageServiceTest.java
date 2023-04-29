@@ -1,20 +1,13 @@
 package com.wemakesoftware.citilistingservice.service;
 
 import io.minio.MinioClient;
-import io.minio.errors.MinioException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.Description;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,7 +28,7 @@ class ImageServiceTest {
     }
 
     @Test
-    @Description("should upload file")
+    @DisplayName("should upload file")
     void uploadFile() throws Exception {
         final Resource imageResource = new ClassPathResource("Map.png");
         String flname = "city";
@@ -45,7 +38,7 @@ class ImageServiceTest {
     }
 
     @Test
-    @Description("should not upload file")
+    @DisplayName("should not upload file")
     void uploadFileError() throws Exception {
         final Resource imageResource = new ClassPathResource("Map.png");
 
@@ -69,12 +62,6 @@ class ImageServiceTest {
     }
 
     @Test
-    void removeObjectFromBucket() throws MinioException {
-        String obectName = "objectName";
-        imageService.removeObjectFromBucket(bucketName, obectName);
-    }
-
-    @Test
     void replace() throws Exception {
         MultipartFile city = new MockMultipartFile("fileName", new byte[0]);
         String obectName = "objectName";
@@ -84,7 +71,7 @@ class ImageServiceTest {
     }
 
     @Test
-    void download() throws MinioException, IOException, NoSuchAlgorithmException, InvalidKeyException {
+    void download() throws  Exception {
         String obectName = "objectName";
         final Resource imageResource = new ClassPathResource("Map.png");
         when(minioClient.getObject(any())).thenReturn(imageResource.getInputStream());

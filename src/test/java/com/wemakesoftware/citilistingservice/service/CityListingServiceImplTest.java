@@ -6,6 +6,7 @@ import com.wemakesoftware.citilistingservice.model.City;
 import com.wemakesoftware.citilistingservice.repository.CityListingRepository;
 import com.wemakesoftware.citilistingservice.repository.PhotoListingRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Description;
 import org.springframework.data.domain.Page;
@@ -36,7 +37,7 @@ class CityListingServiceImplTest {
     }
 
     @Test
-    @Description("get all cities with the name, should return non null list of elements")
+    @DisplayName("get all cities with the name, should return non null list of elements")
     void getCities() {
 
         List<City> data = List.of(
@@ -62,7 +63,7 @@ class CityListingServiceImplTest {
     }
 
     @Test
-    @Description("Should update city detail")
+    @DisplayName("Should update city detail")
     void updateCityDetail() {
         CityDto city = CityDto
                 .builder()

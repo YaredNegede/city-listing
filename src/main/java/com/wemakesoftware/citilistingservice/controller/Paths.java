@@ -6,4 +6,7 @@ public interface Paths {
     String root_image_update = "update";
     String root_image_delete = "delete";
     String root_image_download = "download";
+
+    String root_city = "/v1/api/cities/";
+
 }

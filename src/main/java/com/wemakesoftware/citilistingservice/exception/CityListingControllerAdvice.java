@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class CityListingControllerAdvice {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Exception> handleRuntimeException(RuntimeException exception) {
+    public ResponseEntity<Exception> handleRuntimeException(Exception exception) {
         return ResponseEntity.badRequest().body(new Exception(exception.getLocalizedMessage()));
     }
 }

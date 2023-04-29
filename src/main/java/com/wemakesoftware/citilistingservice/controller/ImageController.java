@@ -27,7 +27,7 @@ public class ImageController {
         return ResponseEntity.ok(imageService.uploadImage(image, objectName));
     }
 
-    @PostMapping(value = Paths.root_image_update, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = Paths.root_image_update, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> update(@RequestPart("image") MultipartFile image,
                                          @RequestParam("objectName") String objectName) throws Exception {
         return ResponseEntity.ok(imageService.replace(image, objectName));
