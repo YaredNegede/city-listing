@@ -1,7 +1,9 @@
 package com.wemakesoftware.citilistingservice.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.Bucket;
@@ -35,8 +37,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import java.io.*;
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @Slf4j
 @AutoConfigureMockMvc
 @SpringBootTest(classes = CityListingServiceApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -64,7 +64,7 @@ class CityListingControllerTestIT extends MinioSetup {
 
             String[] cyt = inString.split(",");
 
-            City city = new City(0l,cyt[0]);
+            City city = new City(0l, cyt[0]);
 
             cityListingRepository.save(city);
 
@@ -76,16 +76,12 @@ class CityListingControllerTestIT extends MinioSetup {
     @Test
     @DisplayName("Should read all cities , and update for photos")
     void getAllCities() throws Exception {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
         int currentPage = 0;
         int size = 10;
-
-        for (int i = 0; i < 5; i++) {
-
-            ResultActions result = mockMvc.perform(get(Paths.root_city+"?currentPage="+currentPage+"&size="+size))
-                    .andDo(MockMvcResultHandlers.print())
+        for (int i = 0; i < 2; i++) {
+            ResultActions result = mockMvc.perform(
+                            get(Paths.root_city + "?currentPage=" + currentPage + "&size=" + size).with(jwt()))
+                    .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content").isArray())
                     .andExpect(jsonPath("$.content.length()", Matchers.is(10)))
@@ -97,14 +93,15 @@ class CityListingControllerTestIT extends MinioSetup {
                     .getResponse()
                     .getContentAsString();
 
-            Page pagesCityDtos = objectMapper.readValue(content,Page.class);
+            Page pagesCityDtos = objectMapper.readValue(content, Page.class);
 
             pagesCityDtos.content.forEach(cityDto -> {
-                String fileName = UUID.randomUUID()+".jpeg";
+                String fileName = UUID.randomUUID() + ".jpeg";
                 try {
 
                     String url = createOne(fileName, "1.jpeg", this.mockMvc)
                             .andExpect(status().isOk())
+                            .andDo(print())
                             .andReturn()
                             .getResponse()
                             .getContentAsString();
@@ -115,15 +112,22 @@ class CityListingControllerTestIT extends MinioSetup {
                             .build();
 
                     mockMvc.perform(
-                            put(Paths.root_city+cityDto.getId()+"/photo")
-                                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                    .content(objectMapper.writeValueAsBytes(photoDto))
-                    )
+                                    put(Paths.root_city + cityDto.getId() + "/photo").with(jwt())
+                                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                            .content(objectMapper.writeValueAsBytes(photoDto))
+                            )
                             .andExpect(status().isOk())
+                            .andDo(print())
                             .andReturn()
                             .getResponse()
                             .getContentAsString()
-                            .contains(Paths.root_image+Paths.root_image_download+"?objectName="+fileName);
+                            .contains(Paths.root_image + Paths.root_image_download + "?objectName=" + fileName);
+
+                    mockMvc.perform(get(Paths.root_image+Paths.root_image_download+"?objectName="+fileName))
+                            .andDo(print())
+                            .andExpect(status().isOk())
+                            .andExpect(header().stringValues("Content-Type","image/jpeg"))
+                            .andExpect(header().stringValues("Content-Disposition","attachment; filename="+fileName));
 
                 } catch (Exception e) {
                     throw new RuntimeException(e);

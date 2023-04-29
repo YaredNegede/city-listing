@@ -4,21 +4,14 @@ import com.wemakesoftware.citilistingservice.CityListingServiceApplication;
 import com.wemakesoftware.citilistingservice.controller.util.MinioSetup;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.UUID;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -29,9 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = CityListingServiceApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = "classpath:application-test.properties")
 class ImageControllerTestIT extends MinioSetup {
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @Test
     @DisplayName("Should be able to create image")
@@ -49,7 +39,7 @@ class ImageControllerTestIT extends MinioSetup {
     @Test
     @DisplayName("Should not be able to create image")
     void createError() throws Exception {
-        this.mockMvc.perform(post(Paths.root_image+Paths.root_image_create))
+        this.mockMvc.perform(post(Paths.root_image+Paths.root_image_create).with(jwt()))
                 .andExpect(status().is(400))
                 .andReturn()
                 .getResponse()
@@ -86,7 +76,7 @@ class ImageControllerTestIT extends MinioSetup {
 
         this.mockMvc.perform(builder
                         .file("image", image.getBytes())
-                        .param("objectName", fileName))
+                        .param("objectName", fileName).with(jwt()))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andReturn()
@@ -113,6 +103,7 @@ class ImageControllerTestIT extends MinioSetup {
                         multipart(Paths.root_image+Paths.root_image_create)
                                 .file("image", image.getBytes())
                                 .param("objectName", fileName)
+                                .with(jwt())
                 )
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -121,7 +112,7 @@ class ImageControllerTestIT extends MinioSetup {
                 .getContentAsString()
                 .contains(String.join(Paths.root_image,Paths.root_image_download,fileName));
 
-        this.mockMvc.perform(post(Paths.root_image+Paths.root_image_update))
+        this.mockMvc.perform(put(Paths.root_image+Paths.root_image_update).with(jwt()))
                 .andExpect(status().is(400))
                 .andReturn()
                 .getResponse()
@@ -140,7 +131,8 @@ class ImageControllerTestIT extends MinioSetup {
                 .getContentAsString()
                 .contains(String.join(Paths.root_image,Paths.root_image_download,objectName));
 
-        mockMvc.perform(delete(Paths.root_image+Paths.root_image_delete+"?objectName="+objectName))
+        mockMvc.perform(
+                delete(Paths.root_image+Paths.root_image_delete+"?objectName="+objectName).with(jwt()))
                 .andDo(print())
                .andExpect(status().isAccepted());
     }
@@ -168,6 +160,5 @@ class ImageControllerTestIT extends MinioSetup {
                 .andExpect(header().stringValues("Content-Type","image/jpeg"))
                 .andExpect(header().stringValues("Content-Disposition","attachment; filename="+objectName));
     }
-
 
 }
