@@ -17,7 +17,7 @@
 	<description>Challenge project</description>
 
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 		<hibernate.version>6.2.0.Final</hibernate.version>
 		<minio.version>7.1.0</minio.version>
 		<mapstruct.version>1.4.2.Final</mapstruct.version>
@@ -238,6 +238,31 @@
 				</configuration>
 
 			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.34.1</version>
+				<configuration>
+					<images>
+						<image>
+							<name>dockerhub/cities-service:latest</name>
+							<alias>dockerfile</alias>
+							<build>
+								<dockerFileDir>${project.basedir}/src/main/docker</dockerFileDir>
+								<assembly>
+									<descriptorRef>artifact</descriptorRef>
+								</assembly>
+							</build>
+							<run>
+								<ports>
+									<port>8080:8080</port>
+								</ports>
+							</run>
+						</image>
+					</images>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 

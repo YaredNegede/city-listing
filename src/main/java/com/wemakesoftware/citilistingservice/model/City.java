@@ -20,6 +20,10 @@ public class City {
         this.name = name;
     }
 
+    public City(String name) {
+        this.name = name;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
