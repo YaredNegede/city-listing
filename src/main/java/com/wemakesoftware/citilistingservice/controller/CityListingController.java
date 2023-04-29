@@ -48,17 +48,17 @@ public class CityListingController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{name}/photo", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<PhotoDto>> getPhotos(@PathVariable String name,
-                                          @RequestParam(required=true,defaultValue="0")  Integer currentPage,
-                                          @RequestParam(required=true,defaultValue="10") Integer size) throws Exception {
+    @GetMapping(value = "/{name}/photo")
+    public ResponseEntity<Page<PhotoDto>> getPhotos(@PathVariable(required=false) String name,
+                                          @RequestParam(required=false,defaultValue="0")  Integer currentPage,
+                                          @RequestParam(required=false,defaultValue="10") Integer size) throws Exception {
         return  ResponseEntity.ok(cityService.getPhotos(name,PageRequest.of(currentPage,size)));
     }
 
-    @GetMapping(value = "/{id}/photo", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}/city-photos")
     public ResponseEntity<Page<PhotoDto>> getPhotos(@PathVariable int id,
-                                          @RequestParam(required=true,defaultValue="0")  Integer currentPage,
-                                          @RequestParam(required=true,defaultValue="10") Integer size) throws Exception {
+                                          @RequestParam(required=false,defaultValue="0")  Integer currentPage,
+                                          @RequestParam(required=false,defaultValue="10") Integer size) throws Exception {
         return  ResponseEntity.ok(cityService.getPhotos(id,PageRequest.of(currentPage,size)));
     }
 

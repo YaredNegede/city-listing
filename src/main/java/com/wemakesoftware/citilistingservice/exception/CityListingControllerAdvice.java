@@ -9,6 +9,6 @@ public class CityListingControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Exception> handleRuntimeException(Exception exception) {
-        return ResponseEntity.badRequest().body(new Exception(exception.getLocalizedMessage()));
+        return ResponseEntity.badRequest().body(new Exception("Internal Error has occurred"));
     }
 }

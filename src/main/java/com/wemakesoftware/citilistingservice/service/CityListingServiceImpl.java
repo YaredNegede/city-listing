@@ -88,7 +88,8 @@ public class CityListingServiceImpl implements CityListingService {
 
     @Override
     public Page<PhotoDto> getPhotos(String name, Pageable pageable) throws Exception {
-        Page<Photo> photos = photoListingRepository.findAllByPhotoNameLike(name, pageable);
+        Page<Photo> photos = null != name ? photoListingRepository.findAllByPhotoNameLike(name, pageable)
+                                          :  photoListingRepository.findAll(pageable);
         return new PageImpl<>(photos.getContent().stream().map(cityMapper::fromPhoto).collect(Collectors.toList()));
     }
 
