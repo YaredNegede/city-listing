@@ -41,25 +41,10 @@ public class SecurityConfiguration {
                 .disable()
                 .authorizeHttpRequests()
                 .requestMatchers(
-                        "/api/v1/auth/**",
-                        "/v2/api-docs",
-                        "/v3/api-docs",
-                        "/v3/api-docs/**",
-                        "/swagger-resources",
-                        "/swagger-resources/**",
-                        "/configuration/ui",
-                        "/configuration/security",
-                        "/swagger-ui/**",
-                        "/webjars/**",
-                        "/swagger-ui.html"
+                        "/**"
                 )
                 .permitAll()
-                .requestMatchers(GET, Paths.root_image+Paths.root_image_download).permitAll()
-                .requestMatchers(GET, Paths.root_city).permitAll()
-                .requestMatchers(DELETE, Paths.root_city,Paths.root_image+Paths.root_image_delete).hasRole(Role.ADMIN.name())
-                .requestMatchers(PUT, Paths.root_city,Paths.root_image+Paths.root_image_update).hasRole(Role.ADMIN.name())
-                .requestMatchers(POST, Paths.root_city,Paths.root_image+Paths.root_image_create).hasRole(Role.ADMIN.name())
-                .requestMatchers(DELETE, Paths.root_image,Paths.root_image+Paths.root_image_delete).hasRole(Role.ADMIN.name())
+                .requestMatchers("/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -69,8 +54,6 @@ public class SecurityConfiguration {
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout()
-                .logoutUrl("/api/v1/auth/logout")
-//                .addLogoutHandler(logoutHandler)
                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
         ;
 

@@ -15,8 +15,6 @@ import static com.wemakesoftware.citilistingservice.model.security.Permission.*;
 @RequiredArgsConstructor
 public enum Role {
 
-    USER(Collections.emptySet()),
-
     ADMIN(
             Set.of(
                     ALLOW_EDIT,
@@ -24,6 +22,8 @@ public enum Role {
                     ALLOW_DELETE
             )
     );
+
+    public static final String ADMIN_ROLE = "ADMIN";
 
     @Getter
     private final Set<Permission> permissions;

@@ -23,21 +23,21 @@ public class AuthenticationController {
 
     private final AuthenticationService service;
 
-    @PostMapping(value = "/register",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "register",consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request
     ) {
         return ResponseEntity.ok(service.register(request));
     }
 
-    @PostMapping(value = "/authenticate",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "authenticate",consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationRequest request
     ) {
         return ResponseEntity.ok(service.authenticate(request));
     }
 
-    @PostMapping(value = "/refresh-token",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "refresh-token",consumes = MediaType.APPLICATION_JSON_VALUE)
     public void refreshToken(
             HttpServletRequest request,
             HttpServletResponse response

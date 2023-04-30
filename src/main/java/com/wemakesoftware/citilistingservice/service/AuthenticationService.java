@@ -6,6 +6,7 @@ import com.wemakesoftware.citilistingservice.config.JwtService;
 import com.wemakesoftware.citilistingservice.dto.auth.AuthenticationRequest;
 import com.wemakesoftware.citilistingservice.dto.auth.AuthenticationResponse;
 import com.wemakesoftware.citilistingservice.dto.auth.RegisterRequest;
+import com.wemakesoftware.citilistingservice.model.security.Role;
 import com.wemakesoftware.citilistingservice.model.security.User;
 import com.wemakesoftware.citilistingservice.model.security.token.Token;
 import com.wemakesoftware.citilistingservice.model.security.token.TokenType;
@@ -34,11 +35,11 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) {
         User user = User.builder()
-                .firstname(request.getFirstname())
-                .lastname(request.getLastname())
+                .firstname(request.getFirstName())
+                .lastname(request.getLastName())
                 .email(request.getEmail())
+                .role(Role.ADMIN)
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
                 .build();
         User savedUser = repository.save(user);
         String jwtToken = jwtService.generateToken(user);

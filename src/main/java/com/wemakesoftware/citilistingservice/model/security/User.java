@@ -35,7 +35,8 @@ public class User implements UserDetails {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    @Builder.Default
+    private Role role = Role.ADMIN;
 
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;

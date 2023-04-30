@@ -1,6 +1,7 @@
 package com.wemakesoftware.citilistingservice.controller;
 
 import com.wemakesoftware.citilistingservice.dto.DownloadFileResponseDto;
+import com.wemakesoftware.citilistingservice.model.security.Role;
 import com.wemakesoftware.citilistingservice.service.ImageService;
 import io.minio.errors.MinioException;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,18 +23,21 @@ public class ImageController {
 
     private ImageService imageService;
 
+    @Secured(Role.ADMIN_ROLE)
     @PostMapping(value = Paths.root_image_create, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> create(@RequestPart("image") MultipartFile image,
                                        @RequestParam("objectName") String objectName) throws Exception {
         return ResponseEntity.ok(imageService.uploadImage(image, objectName));
     }
 
+    @Secured(Role.ADMIN_ROLE)
     @PutMapping(value = Paths.root_image_update, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> update(@RequestPart("image") MultipartFile image,
                                          @RequestParam("objectName") String objectName) throws Exception {
         return ResponseEntity.ok(imageService.replace(image, objectName));
     }
 
+    @Secured(Role.ADMIN_ROLE)
     @DeleteMapping(value = Paths.root_image_delete)
     public ResponseEntity<Void> remove(@RequestParam("objectName") String objectName) throws Exception {
         imageService.remove(objectName);

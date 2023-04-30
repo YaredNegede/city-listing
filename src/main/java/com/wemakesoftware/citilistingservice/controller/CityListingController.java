@@ -2,6 +2,7 @@ package com.wemakesoftware.citilistingservice.controller;
 
 import com.wemakesoftware.citilistingservice.dto.CityDto;
 import com.wemakesoftware.citilistingservice.dto.PhotoDto;
+import com.wemakesoftware.citilistingservice.model.security.Role;
 import com.wemakesoftware.citilistingservice.service.CityListingService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,18 +32,21 @@ public class CityListingController {
         return new ResponseEntity<>(cityService.getCities(name, PageRequest.of(currentPage,size)), HttpStatus.OK);
     }
 
+    @Secured(Role.ADMIN_ROLE)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCity(@PathVariable long id){
         cityService.deleteCity(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Secured(Role.ADMIN_ROLE)
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateCity(@PathVariable long id, @RequestBody CityDto newCity) {
         cityService.updateCityDetail(id,newCity);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Secured(Role.ADMIN_ROLE)
     @PutMapping(value = "/{id}/photo", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateCity(@PathVariable long id, @RequestBody PhotoDto photoDto) {
         cityService.updateCityDetail(id,photoDto);

@@ -9,5 +9,5 @@ public interface Paths {
 
     String root_city = "/v1/api/cities/";
 
-    String root_auth = "/api/v1/auth";
+    String root_auth = "/v1/api/auth/";
 }

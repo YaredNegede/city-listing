@@ -51,9 +51,9 @@ services:
       PASSWORD: password
 
       #Spring data
-      spring.datasource.url: jdbc:postgresql://postgres:5432/cities
-      spring.datasource.username: pgadmin4@pgadmin.org
-      spring.datasource.password: password
+      pgdatasource_url: postgres
+      pgdatasource_username: pgadmin4@pgadmin.org
+      pgdatasource_password: password
     ports:
       - 8080:8080
 

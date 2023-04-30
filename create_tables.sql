@@ -5,3 +5,6 @@ create table photo (id bigint not null, photo_name varchar(255), photo_url varch
 create sequence city_seq start with 1 increment by 50;
 create sequence photo_seq start with 1 increment by 50;
 alter table if exists photo add constraint FKq2eud890ctngv65muw2tmtar foreign key (city_id) references city;
+create table _user (id integer not null, email varchar(255), firstname varchar(255), lastname varchar(255), password varchar(255), role varchar(255) check (role in ('ADMIN')), primary key (id));
+create table _token (expired boolean not null, id integer not null, revoked boolean not null, user_id integer, _token varchar(255) unique, token_type varchar(255) check (token_type in ('BEARER')), primary key (id));
+alter table if exists _token add constraint FKiblu4cjwvyntq3ugo31klp1c6 foreign key (user_id) references _user;
