@@ -1,0 +1,62 @@
+version: '3.8'
+#***************************************local**********************************
+services:
+  wemakesoftware-minio:
+    image: minio/minio:latest
+    hostname: wemakesoftware-minio
+    container_name: wemakesoftware-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: username
+      MINIO_ROOT_PASSWORD: password
+    ports:
+      - 9000:9000
+      - 9001:9001
+
+  postgres:
+    container_name: postgres_container
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-pgadmin4@pgadmin.org}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    volumes:
+      - ./create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+
+  pgadmin:
+      container_name: pgadmin_container
+      image: dpage/pgadmin4
+      environment:
+        PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+        PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-password}
+        PGADMIN_CONFIG_SERVER_MODE: 'False'
+      ports:
+        - "${PGADMIN_PORT:-5050}:80"
+      restart: unless-stopped
+      depends_on:
+        - postgres
+
+  cities-service:
+    image: dockerhub/cities-service:latest
+    container_name: cities-service
+    volumes:
+      - ./gateway:/tmp
+    environment:
+      #Minio
+      minio.bucket-name.city: city
+      MINIO_URL: wemakesoftware-minio
+      USERNAME: username
+      PASSWORD: password
+
+      #Spring data
+      spring.datasource.url: jdbc:postgresql://postgres:5432/cities
+      spring.datasource.username: pgadmin4@pgadmin.org
+      spring.datasource.password: password
+    ports:
+      - 8080:8080
+
+    depends_on:
+      - wemakesoftware-minio
+      - postgres
