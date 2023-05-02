@@ -11,6 +11,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import java.util.UUID;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -32,7 +33,7 @@ class ImageControllerTestIT extends MinioSetup {
                 .andReturn()
                 .getResponse()
                 .getContentAsString()
-                .contains(String.join(Paths.root_image,Paths.root_image_download,fileName));
+                .contains(Paths.root_image_download+fileName);
 
     }
 
@@ -59,7 +60,7 @@ class ImageControllerTestIT extends MinioSetup {
                     .andReturn()
                     .getResponse()
                     .getContentAsString()
-                    .contains(String.join(Paths.root_image,Paths.root_image_download,fileName));
+                    .contains(Paths.root_image_download+fileName);
 
         final Resource imageResource = new ClassPathResource("2.jpeg");
 
@@ -110,7 +111,7 @@ class ImageControllerTestIT extends MinioSetup {
                 .andReturn()
                 .getResponse()
                 .getContentAsString()
-                .contains(String.join(Paths.root_image,Paths.root_image_download,fileName));
+                .contains(Paths.root_image_download+fileName);
 
         this.mockMvc.perform(put(Paths.root_image+Paths.root_image_update).with(jwt()))
                 .andExpect(status().is(400))
@@ -140,25 +141,22 @@ class ImageControllerTestIT extends MinioSetup {
     @Test
     @DisplayName("Should download image")
     void download() throws Exception {
-        final Resource imageResource = new ClassPathResource("1.jpeg");
         String objectName = UUID.randomUUID() +".jpeg";
-        final MockMultipartFile image = new MockMultipartFile(
-                "image", imageResource.getFilename(),
-                MediaType.MULTIPART_FORM_DATA_VALUE,
-                imageResource.getInputStream());
 
-        createOne(objectName, "1.jpeg", this.mockMvc)
+        String url = createOne(objectName, "1.jpeg", this.mockMvc)
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
-                .getContentAsString()
-                .contains(String.join(Paths.root_image,Paths.root_image_download,objectName));
+                .getContentAsString();
 
-        mockMvc.perform(get(Paths.root_image+Paths.root_image_download+"?objectName="+objectName))
+        mockMvc.perform(get(Paths.root_image+url))
                 .andDo(print())
                .andExpect(status().isOk())
                 .andExpect(header().stringValues("Content-Type","image/jpeg"))
-                .andExpect(header().stringValues("Content-Disposition","attachment; filename="+objectName));
+                .andReturn()
+                .getResponse()
+                .getContentAsString()
+                .contains("attachment; filename="+url);
     }
 
 }

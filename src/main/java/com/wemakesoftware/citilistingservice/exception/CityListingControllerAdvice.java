@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class CityListingControllerAdvice {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Exception> handleRuntimeException(Exception exception) {
-        return ResponseEntity.badRequest().body(new Exception("Internal Error has occurred"));
+    public ResponseEntity<ErrorResponse> handleRuntimeException(Exception exception) {
+        return ResponseEntity.badRequest().body(new ErrorResponse(exception.getMessage()));
     }
 }

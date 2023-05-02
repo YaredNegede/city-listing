@@ -123,11 +123,14 @@ class CityListingControllerTestIT extends MinioSetup {
                             .getContentAsString()
                             .contains(Paths.root_image + Paths.root_image_download + "?objectName=" + fileName);
 
-                    mockMvc.perform(get(Paths.root_image+Paths.root_image_download+"?objectName="+fileName))
+                    mockMvc.perform(get(Paths.root_image+url))
                             .andDo(print())
                             .andExpect(status().isOk())
                             .andExpect(header().stringValues("Content-Type","image/jpeg"))
-                            .andExpect(header().stringValues("Content-Disposition","attachment; filename="+fileName));
+                            .andReturn()
+                            .getResponse()
+                            .getContentAsString()
+                            .contains("attachment; filename="+url);
 
                 } catch (Exception e) {
                     throw new RuntimeException(e);

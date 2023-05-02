@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 
@@ -30,7 +31,7 @@ public class ImageServiceImpl implements ImageService {
     @Value("${minio.bucket-name.city}")
     private String cityImageBucketName;
 
-    private MinioClient minioClient;
+    private final MinioClient minioClient;
 
     public ImageServiceImpl(MinioClient minioClient) {
         this.minioClient = minioClient;
@@ -51,11 +52,13 @@ public class ImageServiceImpl implements ImageService {
             throw new Exception("File name cannot be null");
         }
 
+        fileName = UUID.randomUUID()+fileName.replace(" ","_");
+
         try (InputStream fis = resource.getInputStream()) {
             minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(fileName)
                     .stream(fis, fis.available(), -1).build());
 
-            return Paths.root_image+Paths.root_image_download+"?objectName="+fileName;
+            return Paths.root_image_download+"?objectName="+fileName;
 
         } catch (Exception e) {
             log.error("Error when call minio upload file {}", e);

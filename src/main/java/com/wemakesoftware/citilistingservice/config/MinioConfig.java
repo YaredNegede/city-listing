@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class MinioConfig {
 
-    @Value("${MINIO_URL:localhost}")
+    @Value("${MINIO_URL}")
     private String url;
 
     @Value("${USERNAME:username}")

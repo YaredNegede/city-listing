@@ -6,6 +6,7 @@ import com.wemakesoftware.citilistingservice.service.ImageService;
 import io.minio.errors.MinioException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
@@ -15,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.UUID;
+
+import static com.wemakesoftware.citilistingservice.service.ImageService.getExtension;
 
 @AllArgsConstructor
 @RestController
@@ -32,10 +35,8 @@ public class ImageController {
 
     @PutMapping(value = Paths.root_image_update, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> update(@RequestPart("image") MultipartFile image,
-                                         @RequestParam("objectName") String objectName) throws Exception {
-        String[] filePart = objectName.split(".");
-
-        return ResponseEntity.ok(imageService.replace(image, UUID.randomUUID()+filePart[filePart.length-1]));
+                                         @RequestParam("objectName") @NotNull String objectName) throws Exception {
+        return ResponseEntity.ok(imageService.replace(image, objectName));
     }
 
     @DeleteMapping(value = Paths.root_image_delete)
@@ -48,10 +49,10 @@ public class ImageController {
     public ResponseEntity<Resource> download(@RequestParam("objectName") String objectName) throws Exception {
 
         DownloadFileResponseDto downloadImage =   DownloadFileResponseDto.builder()
-                                            .fileName(objectName)
-                                            .inputStream(imageService.download(objectName))
-                                            .contentType("image/jpeg") //TODO: hard coded mime type
-                                            .build();
+                                                                        .fileName(objectName)
+                                                                        .inputStream(imageService.download(objectName))
+                                                                        .contentType("image/jpeg") //TODO: hard coded mime type
+                                                                        .build();
 
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(downloadImage.getContentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + downloadImage.getFileName())
