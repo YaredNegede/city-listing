@@ -20,4 +20,6 @@ public interface CityListingService {
     Page<PhotoDto> getPhotos(long id, Pageable pageable) throws Exception;
 
     void save(CityDto cityDto);
+
+    CityDto get(long id) throws Exception;
 }

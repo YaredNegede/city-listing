@@ -52,27 +52,18 @@ public class CityListingServiceImpl implements CityListingService {
     @Override
     public void updateCityDetail(long id, PhotoDto newCity) {
         Optional<City> found = cityRepository.findById(id);
-        found.ifPresent(city -> {
-            Optional<Photo> photoOptional = photoListingRepository.findByCity(city);
-            photoOptional.ifPresentOrElse(
-                    photoFound -> {
-                        if (photoFound.getPhotoName() != null) {
-                            photoFound.setPhotoName(newCity.getPhotoName());
-                        }
-                        if (newCity.getPhotoUrl() != null) {
-                            photoFound.setPhotoUrl(newCity.getPhotoUrl());
-                        }
-                        photoFound.setCity(city);
-                        photoListingRepository.save(photoFound);
-                    }, () -> {
-                        Photo photo = Photo.builder()
-                                .photoName(newCity.getPhotoName())
-                                .photoUrl(newCity.getPhotoUrl())
-                                .build();
-                        photo.setCity(city);
-                        photoListingRepository.save(photo);
-                    });
-        });
+        if(found.isPresent()){
+            Photo photo = Photo.builder()
+                    .photoName(newCity.getPhotoName())
+                    .photoUrl(newCity.getPhotoUrl())
+                    .build();
+            City city = found.get();
+            photo.setCity(city);
+            photoListingRepository.save(photo);
+            city.getCities().add(photo);
+            cityRepository.save(city);
+        }
+        
     }
 
     @Override
@@ -106,5 +97,15 @@ public class CityListingServiceImpl implements CityListingService {
     @Override
     public void save(CityDto cityDto) {
         this.cityRepository.save(cityMapper.toCity(cityDto));
+    }
+
+    @Override
+    public CityDto get(long id) throws Exception {
+        Optional<City> city = this.cityRepository.findById(id);
+        if(city.isEmpty()){
+            throw new Exception("city not found");
+        }
+
+        return cityMapper.fromCity(city.get());
     }
 }

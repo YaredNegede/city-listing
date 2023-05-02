@@ -52,6 +52,11 @@ public class CityListingController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<CityDto> get(@PathVariable long id) throws Exception {
+        return  ResponseEntity.ok(cityService.get(id));
+    }
+
     @PostMapping("/")
     public ResponseEntity<Void> saveCity(@RequestBody CityDto cityDto){
         cityService.save(cityDto);
