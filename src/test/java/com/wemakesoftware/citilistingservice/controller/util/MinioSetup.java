@@ -18,6 +18,7 @@ import com.wemakesoftware.citilistingservice.model.security.Role;
 import com.wemakesoftware.citilistingservice.model.security.User;
 import com.wemakesoftware.citilistingservice.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -131,12 +132,15 @@ public abstract class MinioSetup {
                         .build();
 
                 ResultActions res = mockMvc.perform(
-                        post(Paths.root_auth+"/authenticate")
+                        post("/v1/api/auth/authenticate")
                                 .content(objectMapper.writeValueAsString(auth))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 );
                 String cnt = res.andReturn().getResponse().getContentAsString();
 
+                if(StringUtils.isBlank(cnt)){
+                    throw new Exception("Failed Authorization");
+                }
                 AuthenticationResponse authenticationResponse =  objectMapper.readValue(cnt, AuthenticationResponse.class);
 
                 request.addHeader("Authorization","Bearer "+authenticationResponse.getAccessToken());

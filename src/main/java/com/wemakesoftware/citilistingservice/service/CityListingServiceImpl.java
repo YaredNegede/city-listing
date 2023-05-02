@@ -102,4 +102,9 @@ public class CityListingServiceImpl implements CityListingService {
         Page<Photo> photos = photoListingRepository.findAllByCity(city.get(),pageable);
         return new PageImpl<>(photos.getContent().stream().map(cityMapper::fromPhoto).collect(Collectors.toList()));
     }
+
+    @Override
+    public void save(CityDto cityDto) {
+        this.cityRepository.save(cityMapper.toCity(cityDto));
+    }
 }

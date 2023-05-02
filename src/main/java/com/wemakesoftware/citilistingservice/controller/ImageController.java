@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @AllArgsConstructor
 @RestController
@@ -23,21 +24,20 @@ public class ImageController {
 
     private ImageService imageService;
 
-    @Secured(Role.ADMIN_ROLE)
     @PostMapping(value = Paths.root_image_create, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> create(@RequestPart("image") MultipartFile image,
+    public ResponseEntity<String> create(@RequestParam("image") MultipartFile image,
                                        @RequestParam("objectName") String objectName) throws Exception {
         return ResponseEntity.ok(imageService.uploadImage(image, objectName));
     }
 
-    @Secured(Role.ADMIN_ROLE)
     @PutMapping(value = Paths.root_image_update, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> update(@RequestPart("image") MultipartFile image,
                                          @RequestParam("objectName") String objectName) throws Exception {
-        return ResponseEntity.ok(imageService.replace(image, objectName));
+        String[] filePart = objectName.split(".");
+
+        return ResponseEntity.ok(imageService.replace(image, UUID.randomUUID()+filePart[filePart.length-1]));
     }
 
-    @Secured(Role.ADMIN_ROLE)
     @DeleteMapping(value = Paths.root_image_delete)
     public ResponseEntity<Void> remove(@RequestParam("objectName") String objectName) throws Exception {
         imageService.remove(objectName);

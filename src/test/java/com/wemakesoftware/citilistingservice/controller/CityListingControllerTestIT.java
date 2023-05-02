@@ -80,7 +80,7 @@ class CityListingControllerTestIT extends MinioSetup {
         int size = 10;
         for (int i = 0; i < 2; i++) {
             ResultActions result = mockMvc.perform(
-                            get(Paths.root_city + "?currentPage=" + currentPage + "&size=" + size).with(jwt()))
+                            get(Paths.root_city + "/public?currentPage=" + currentPage + "&size=" + size).with(jwt()))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content").isArray())

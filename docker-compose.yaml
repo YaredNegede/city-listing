@@ -46,7 +46,8 @@ services:
     environment:
       #Minio
       minio.bucket-name.city: city
-      MINIO_URL: wemakesoftware-minio
+      MINIO_URL_PRO: wemakesoftware-minio
+      MINIO_PORT: 9000
       USERNAME: username
       PASSWORD: password
 
@@ -54,6 +55,9 @@ services:
       pgdatasource_url: postgres
       pgdatasource_username: pgadmin4@pgadmin.org
       pgdatasource_password: password
+
+      #Profile
+      CITY_PROFILE: default
     ports:
       - 8080:8080
 

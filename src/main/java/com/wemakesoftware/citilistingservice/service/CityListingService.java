@@ -18,4 +18,6 @@ public interface CityListingService {
     Page<PhotoDto> getPhotos(String named, Pageable pageable) throws Exception;
 
     Page<PhotoDto> getPhotos(long id, Pageable pageable) throws Exception;
+
+    void save(CityDto cityDto);
 }

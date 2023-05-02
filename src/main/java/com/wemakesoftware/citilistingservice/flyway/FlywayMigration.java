@@ -5,6 +5,7 @@ import com.wemakesoftware.citilistingservice.model.Photo;
 import com.wemakesoftware.citilistingservice.repository.CityListingRepository;
 import com.wemakesoftware.citilistingservice.repository.PhotoListingRepository;
 import com.wemakesoftware.citilistingservice.service.ImageService;
+import io.minio.MinioClient;
 import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;

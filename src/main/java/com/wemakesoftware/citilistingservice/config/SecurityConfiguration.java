@@ -31,9 +31,6 @@ public class SecurityConfiguration {
     @Autowired
     private AuthenticationProvider authenticationProvider;
 
-//    @Autowired
-//    private LogoutHandler logoutHandler;
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -41,10 +38,21 @@ public class SecurityConfiguration {
                 .disable()
                 .authorizeHttpRequests()
                 .requestMatchers(
-                        "/**"
+                        "/v1/api/auth/**",
+                        Paths.root_city+"public",
+                        Paths.root_image+Paths.root_image_download,
+                        "/v2/api-docs",
+                        "/v3/api-docs",
+                        "/v3/api-docs/**",
+                        "/swagger-resources",
+                        "/swagger-resources/**",
+                        "/configuration/ui",
+                        "/configuration/security",
+                        "/swagger-ui/**",
+                        "/webjars/**",
+                        "/swagger-ui.html"
                 )
                 .permitAll()
-                .requestMatchers("/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

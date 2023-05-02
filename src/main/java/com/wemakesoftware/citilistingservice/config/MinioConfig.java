@@ -4,18 +4,19 @@ package com.wemakesoftware.citilistingservice.config;
 import io.minio.MinioClient;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "minio")
 @Getter
 @Setter
+@Slf4j
 public class MinioConfig {
 
-    @Value("${MINIO_URL:http://wemakesoftware-minio:9000}")
+    @Value("${MINIO_URL:localhost}")
     private String url;
 
     @Value("${USERNAME:username}")
@@ -26,6 +27,10 @@ public class MinioConfig {
 
     @Bean
     public MinioClient minioclient() {
+
+        log.info(url);
+        log.info(getUsername());
+        log.info(getPassword());
         return MinioClient.builder()
                 .endpoint(url)
                 .credentials(username, password)
