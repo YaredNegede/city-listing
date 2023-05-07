@@ -8,11 +8,13 @@ import com.wemakesoftware.citilistingservice.model.City;
 import com.wemakesoftware.citilistingservice.model.Photo;
 import com.wemakesoftware.citilistingservice.repository.CityListingRepository;
 import com.wemakesoftware.citilistingservice.repository.PhotoListingRepository;
+import io.minio.errors.MinioException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@Transactional
 public class CityListingServiceImpl implements CityListingService {
 
     private final CityListingRepository cityRepository;
@@ -28,9 +31,14 @@ public class CityListingServiceImpl implements CityListingService {
 
     private final CityMapper cityMapper = new CityMapperImpl();
 
-    public CityListingServiceImpl(CityListingRepository cityRepository, PhotoListingRepository photoListingRepository) {
+    private ImageService imageService;
+
+    public CityListingServiceImpl(CityListingRepository cityRepository,
+                                  PhotoListingRepository photoListingRepository,
+                                  ImageService imageServices) {
         this.cityRepository = cityRepository;
         this.photoListingRepository = photoListingRepository;
+        this.imageService = imageServices;
     }
 
     @Override
@@ -107,5 +115,19 @@ public class CityListingServiceImpl implements CityListingService {
         }
 
         return cityMapper.fromCity(city.get());
+    }
+
+    @Override
+    public void deletePhoto(long id) {
+        this.photoListingRepository.findById(id)
+                .ifPresent(photo -> {
+                    try {
+                        photo.setCity(null);
+                        this.photoListingRepository.deleteById(id);
+                        this.imageService.remove(photo.getPhotoName());
+                    } catch (MinioException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 }

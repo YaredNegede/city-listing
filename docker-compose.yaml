@@ -12,6 +12,8 @@ services:
     ports:
       - 9000:9000
       - 9001:9001
+    networks:
+      - backend
 
   postgres:
     container_name: postgres_container
@@ -24,6 +26,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    networks:
+      - backend
 
   pgadmin:
       container_name: pgadmin_container
@@ -37,12 +41,14 @@ services:
       restart: unless-stopped
       depends_on:
         - postgres
+      networks:
+        - backend
 
   cities-service:
     image: dockerhub/cities-service:latest
     container_name: cities-service
     volumes:
-      - ./gateway:/tmp
+      - ./tmp:/tmp
     environment:
       #Minio
       minio.bucket-name.city: city
@@ -64,3 +70,21 @@ services:
     depends_on:
       - wemakesoftware-minio
       - postgres
+    networks:
+      - backend
+      - frontend
+
+  angular-cities-service-client:
+    image: angular-cities-service-client:latest
+    container_name: cities-service-admin
+    ports:
+      - 80:80
+    restart: always
+    depends_on:
+      - cities-service
+    networks:
+      - frontend
+
+networks:
+  frontend: null
+  backend: null

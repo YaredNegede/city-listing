@@ -22,4 +22,6 @@ public interface CityListingService {
     void save(CityDto cityDto);
 
     CityDto get(long id) throws Exception;
+
+    void deletePhoto(long id);
 }

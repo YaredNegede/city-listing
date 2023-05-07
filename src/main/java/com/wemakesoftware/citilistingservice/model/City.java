@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,8 +33,11 @@ public class City {
 
     private String name;
 
+    private String countryName;
+
     @OneToMany
     @JoinColumn(name = "city_id")
+    @Cascade(CascadeType.ALL)
     private Set<Photo> cities = new HashSet<>();
 
 

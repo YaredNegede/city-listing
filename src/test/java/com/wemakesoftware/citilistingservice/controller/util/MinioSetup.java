@@ -47,7 +47,6 @@ public abstract class MinioSetup {
     protected static  int    MINIO_PORT      =  9000;
     private final String username = "admin@wemakesoftware.com";
     private static String password = "password";
-    private  String passwordEncode;
 
     protected static AmazonS3 client         =  null;
 
@@ -96,7 +95,7 @@ public abstract class MinioSetup {
     public void setUp() {
         List<User> userList = (List<User>) userRepository.findAll();
         if(userList.isEmpty()) {
-            passwordEncode = passwordEncoder.encode(password);
+            String passwordEncode = passwordEncoder.encode(password);
             User user = User.builder()
                     .role(Role.ADMIN)
                     .email(username)

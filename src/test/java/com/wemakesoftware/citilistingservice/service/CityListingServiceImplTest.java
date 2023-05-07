@@ -33,7 +33,7 @@ class CityListingServiceImplTest {
     public void setup(){
         cityRepository = mock(CityListingRepository.class);
         photoListingRepository = mock(PhotoListingRepository.class);
-        cityListingService = new CityListingServiceImpl(cityRepository, photoListingRepository);
+        cityListingService = new CityListingServiceImpl(cityRepository, photoListingRepository, mock(ImageService.class));
     }
 
     @Test

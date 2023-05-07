@@ -23,7 +23,7 @@ public class CityListingController {
 
     public final CityListingService cityService;
 
-    @GetMapping(value = "/public")
+    @GetMapping(value = "public")
     public ResponseEntity<Page<CityDto>> getAllCities(
             @RequestParam(required = false) String name,
             @RequestParam(required=false,defaultValue="0")  Integer currentPage,
@@ -32,46 +32,52 @@ public class CityListingController {
         return new ResponseEntity<>(cityService.getCities(name, PageRequest.of(currentPage,size)), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/public/{name}/photo")
-    public ResponseEntity<Page<PhotoDto>> getPhotos(@PathVariable(required=false) String name,
+    @GetMapping(value = "public/{name}/photo")
+    public ResponseEntity<Page<PhotoDto>> getPhotos(@PathVariable(required=false, name = "name") String name,
                                                     @RequestParam(required=false,defaultValue="0")  Integer currentPage,
                                                     @RequestParam(required=false,defaultValue="10") Integer size) throws Exception {
         return  ResponseEntity.ok(cityService.getPhotos(name,PageRequest.of(currentPage,size)));
     }
 
-    @GetMapping(value = "/public/{id}/city-photos")
+    @GetMapping(value = "public/{id}/city-photos")
     public ResponseEntity<Page<PhotoDto>> getPhotos(@PathVariable int id,
                                                     @RequestParam(required=false,defaultValue="0")  Integer currentPage,
                                                     @RequestParam(required=false,defaultValue="10") Integer size) throws Exception {
         return  ResponseEntity.ok(cityService.getPhotos(id,PageRequest.of(currentPage,size)));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCity(@PathVariable long id){
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteCity(@PathVariable(name = "id") long id){
         cityService.deleteCity(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CityDto> get(@PathVariable long id) throws Exception {
+    @GetMapping("{id}")
+    public ResponseEntity<CityDto> get(@PathVariable(name = "id") long id) throws Exception {
         return  ResponseEntity.ok(cityService.get(id));
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<Void> saveCity(@RequestBody CityDto cityDto){
         cityService.save(cityDto);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> updateCity(@PathVariable long id, @RequestBody CityDto newCity) {
+    @PutMapping("{id}")
+    public ResponseEntity<Void> updateCity(@PathVariable(name = "id") long id, @RequestBody CityDto newCity) {
         cityService.updateCityDetail(id,newCity);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{id}/photo", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateCity(@PathVariable long id, @RequestBody PhotoDto photoDto) {
+    @PutMapping(value = "{id}/photo", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> updateCity(@PathVariable(name = "id") long id, @RequestBody PhotoDto photoDto) {
         cityService.updateCityDetail(id,photoDto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "{id}/photo")
+    public ResponseEntity<Void> deletePhoto(@PathVariable(name = "id") long id) {
+        cityService.deletePhoto(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -18,4 +18,6 @@ public class CityDto {
     @NotEmpty(message = "Name is required")
     private String name;
 
+    private String countryName;
+
 }
