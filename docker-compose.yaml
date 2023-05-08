@@ -45,7 +45,7 @@ services:
         - backend
 
   cities-service:
-    image: dockerhub/cities-service:latest
+    image: ynegede/cities-service:latest
     container_name: cities-service
     volumes:
       - ./tmp:/tmp
@@ -75,7 +75,7 @@ services:
       - frontend
 
   angular-cities-service-client:
-    image: angular-cities-service-client:latest
+    image: ynegede/angular-cities-service-client:latest
     container_name: cities-service-admin
     ports:
       - 80:80
